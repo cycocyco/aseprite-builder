@@ -6,7 +6,6 @@ jobs:
   build:
     runs-on: windows-latest
     timeout-minutes: 600
-    timeout-minutes: 600
     permissions:
       contents: write
     steps:
@@ -17,7 +16,7 @@ jobs:
         run: git config --system core.longpaths true
 
       - name: Install Build Tools
-        run: choco install cmake ninja -j 2 innosetup
+        run: choco install cmake ninja innosetup
 
       - name: Fetch Latest Release Metadata
         shell: powershell
@@ -57,7 +56,7 @@ jobs:
           $abs_build = Join-Path $env:GITHUB_WORKSPACE "build"
           mkdir $abs_build -Force
           Set-Location $abs_build
-          cmake -G ninja -j 2 `
+          cmake -G Ninja `
             -DCMAKE_BUILD_TYPE=Release `
             -DLAF_BACKEND=skia `
             -DSKIA_DIR="$abs_skia" `
@@ -66,7 +65,7 @@ jobs:
             -DENABLE_UPDATER=OFF `
             "$abs_src"
 
-      - name: Compile with ninja -j 2
+      - name: Compile with Ninja
         run: |
           cd build
           ninja -j 2
@@ -74,7 +73,6 @@ jobs:
       - name: Collect Dependencies (DLLs)
         shell: powershell
         run: |
-          # Copy OpenSSL DLLs to the bin folder so the app can run
           $binDir = "$env:GITHUB_WORKSPACE\build\bin"
           $sslDir = "C:\Program Files\OpenSSL\bin"
           Copy-Item "$sslDir\libcrypto-3-x64.dll" -Destination $binDir -Force
