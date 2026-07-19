@@ -6,6 +6,7 @@ jobs:
   build:
     runs-on: windows-latest
     timeout-minutes: 600
+    timeout-minutes: 600
     permissions:
       contents: write
     steps:
@@ -16,7 +17,7 @@ jobs:
         run: git config --system core.longpaths true
 
       - name: Install Build Tools
-        run: choco install cmake ninja innosetup
+        run: choco install cmake ninja -j 2 innosetup
 
       - name: Fetch Latest Release Metadata
         shell: powershell
@@ -56,8 +57,8 @@ jobs:
           $abs_build = Join-Path $env:GITHUB_WORKSPACE "build"
           mkdir $abs_build -Force
           Set-Location $abs_build
-          cmake -G Ninja `
-            -DCMAKE_BUILD_TYPE=RelWithDebInfo `
+          cmake -G ninja -j 2 `
+            -DCMAKE_BUILD_TYPE=Release `
             -DLAF_BACKEND=skia `
             -DSKIA_DIR="$abs_skia" `
             -DSKIA_LIBRARY_DIR="$abs_skia\out\Release-x64" `
@@ -65,10 +66,10 @@ jobs:
             -DENABLE_UPDATER=OFF `
             "$abs_src"
 
-      - name: Compile with Ninja
+      - name: Compile with ninja -j 2
         run: |
           cd build
-          ninja
+          ninja -j 2
 
       - name: Collect Dependencies (DLLs)
         shell: powershell
