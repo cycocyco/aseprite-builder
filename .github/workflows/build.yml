@@ -58,6 +58,7 @@ jobs:
           Set-Location $abs_build
           cmake -G Ninja `
             -DCMAKE_BUILD_TYPE=Release `
+            -DCMAKE_CXX_FLAGS="/FS" `
             -DLAF_BACKEND=skia `
             -DSKIA_DIR="$abs_skia" `
             -DSKIA_LIBRARY_DIR="$abs_skia\out\Release-x64" `
@@ -68,7 +69,7 @@ jobs:
       - name: Compile with Ninja
         run: |
           cd build
-          ninja -j 2
+          cmake --build . --config Release -j 2
 
       - name: Collect Dependencies (DLLs)
         shell: powershell
